@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
+#include <stdio.h>
 
 enum {_BASE, _L1, _L2, _L3};
 
@@ -34,7 +35,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______,_______,_______,_______,_______,_______,_______,
                 _______,_______,_______,_______,_______,_______,_______,
         _______,KC_UP,  _______,_______,_______,_______,_______,_______,
-        KC_BRIU,KC_VOLU,QK_RBT ,_______,_______,KC_F10 ,KC_F9  ,KC_F8,
+        KC_BRIU,KC_VOLU,QK_RBT ,KC_F12 ,KC_F11 ,KC_F10 ,KC_F9  ,KC_F8,
         _______,KC_LEFT,KC_RGHT,_______,_______,KC_DOWN,KC_DOWN,FN_LOCK,
         _______,        KC_INS ,KC_DEL ,_______,_______,L3_LOCK,
         KC_BRID,KC_VOLD,        _______,_______,_______,_______,_______,
@@ -47,31 +48,33 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______,_______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,_______,_______,
                 _______,_______,_______,_______,_______,_______,_______,
-        _______,_______,_______,_______,_______,_______,_______,_______,
+        _______,KC_UP  ,_______,_______,_______,_______,_______,_______,
         _______,_______,KC_BSPC,_______,_______,KC_0,   KC_9,   KC_8,
-        _______,_______,_______,_______,_______,_______,_______,_______,
+        _______,KC_LEFT,KC_RGHT,_______,_______,KC_DOWN,KC_DOWN,_______,
         _______,        _______,_______,_______,_______,_______,
         _______,_______,        _______,_______,_______,_______,_______,
         _______,_______,_______,_______,KC_LCTL,_______,_______,_______
     ),
     [_L3] = LAYOUT(
 //     +-------+-------+-------+-------+-------+-------+-------+-------+
-        QK_GESC,KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   
         _______,_______,_______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,_______,_______,
-        RGB_TOG,RGB_MOD,RGB_HUI,RGB_SAI,RGB_VAI,_______,_______,_______,
+        _______,_______,_______,_______,_______,_______,_______,_______,
+        _______,_______,_______,_______,_______,_______,_______,_______,
                 _______,_______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,_______,_______,
-        _______,_______,KC_BSPC,_______,_______,KC_0,   KC_9,   KC_8,
         _______,_______,_______,_______,_______,_______,_______,_______,
-        _______,        _______,_______,_______,_______,_______,
+        RGB_HUI,_______,_______,RGB_VAI,_______,_______,RGB_SAI,_______,
+        _______,        RGB_TOG,RGB_MOD,_______,_______,_______,
         _______,_______,        _______,_______,_______,_______,_______,
-        _______,_______,_______,_______,KC_LCTL,_______,_______,_______
+        _______,_______,_______,_______,_______,_______,_______,_______
     )
 
 };
 
 #ifdef RGBLIGHT_LAYERS
+
+#define RGBLIGHT_VAL_STEP 17
 
 const rgblight_segment_t PROGMEM rgb_default_layer[] = RGBLIGHT_LAYER_SEGMENTS(
     {0, 84, HSV_CYAN}
@@ -84,6 +87,8 @@ const rgblight_segment_t PROGMEM rgb_fn_layer[] = RGBLIGHT_LAYER_SEGMENTS(
     {15, 4, HSV_GREEN},   
     {25, 1, HSV_GREEN},    
     {41, 1, HSV_GREEN},    
+    {60, 1, HSV_GREEN},    
+    {79, 1, HSV_GREEN},    
     {22, 3, HSV_MAGENTA},  
     {53, 3, HSV_MAGENTA},  
     {57, 3, HSV_MAGENTA},  
@@ -91,25 +96,17 @@ const rgblight_segment_t PROGMEM rgb_fn_layer[] = RGBLIGHT_LAYER_SEGMENTS(
 );
 
 const rgblight_segment_t PROGMEM rgb_fnlock_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {1,10, HSV_YELLOW},   
-    {15, 4, HSV_GREEN},   
-    {25, 1, HSV_GREEN},    
     {22, 3, HSV_MAGENTA},  
     {53, 3, HSV_MAGENTA},  
     {57, 3, HSV_MAGENTA},  
-    {81, 1, HSV_MAGENTA}  
+    {81, 2, HSV_MAGENTA}  
 );
 
 const rgblight_segment_t PROGMEM rgb_l3_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {1,10, HSV_YELLOW},   
-    {15, 4, HSV_GREEN},   
-    {25, 1, HSV_GREEN},    
-    {42, 7, HSV_RED},    
-    {67, 5, HSV_RED},    
-    {22, 3, HSV_MAGENTA},  
-    {53, 3, HSV_MAGENTA},  
-    {57, 3, HSV_MAGENTA},  
-    {81, 1, HSV_MAGENTA}  
+    {21, 4, HSV_RED},  
+    {53, 4, HSV_YELLOW},  
+    {57, 3, HSV_GREEN},  
+    {81, 3, HSV_MAGENTA}  
 );
 
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
@@ -190,6 +187,43 @@ void render_logo(void) {
 
 bool first_call = true;
 
+static void oled_render_hex(int x, int y, int num) {
+  static char wpm_str[3];
+  sprintf(wpm_str, "%02X", num);
+  oled_set_cursor(x, y);
+  oled_write(wpm_str, false);
+}
+
+static void oled_render_rgb_mode_name(void) {
+  int mode = rgblight_get_mode();
+  oled_set_cursor(5,6);
+  if (mode == RGBLIGHT_MODE_STATIC_LIGHT) {
+    oled_write_P(PSTR("STATIC   "), false);
+  } else if (mode >= RGBLIGHT_MODE_BREATHING && mode <= RGBLIGHT_MODE_BREATHING + 3) {
+    oled_write_P(PSTR("BREATHING"), false);
+  } else if (mode >= RGBLIGHT_MODE_RAINBOW_MOOD  && mode <= RGBLIGHT_MODE_RAINBOW_MOOD + 2) {
+    oled_write_P(PSTR("MOOD     "), false);
+  } else if (mode >= RGBLIGHT_MODE_RAINBOW_SWIRL && mode <= RGBLIGHT_MODE_RAINBOW_SWIRL + 5) {
+    oled_write_P(PSTR("SWIRL    "), false);
+  } else if (mode >= RGBLIGHT_MODE_SNAKE && mode <= RGBLIGHT_MODE_SNAKE + 5) {
+    oled_write_P(PSTR("SNAKE    "), false);
+  } else if (mode >= RGBLIGHT_MODE_KNIGHT && mode <= RGBLIGHT_MODE_KNIGHT + 2) {
+    oled_write_P(PSTR("KNIGHT   "), false);
+  } else if (mode == RGBLIGHT_MODE_CHRISTMAS) {
+    oled_write_P(PSTR("XMAS     "), false);
+  } else if (mode >= RGBLIGHT_MODE_STATIC_GRADIENT && mode <= RGBLIGHT_MODE_STATIC_GRADIENT + 9) {
+    oled_write_P(PSTR("GRADIENT "), false);
+  } else if (mode == RGBLIGHT_MODE_RGB_TEST) {
+    oled_write_P(PSTR("RGB TEST "), false);
+  } else if (mode == RGBLIGHT_MODE_ALTERNATING) {
+    oled_write_P(PSTR("ALTERNATE"), false);
+  } else if (mode >= RGBLIGHT_MODE_TWINKLE && mode <= RGBLIGHT_MODE_TWINKLE + 5) {
+    oled_write_P(PSTR("TWINKLE  "), false);
+  } else {
+    oled_write_P(PSTR("         "), false);
+  }
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (first_call) {
     oled_clear();
@@ -197,13 +231,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     first_call = false;
   }
   switch (keycode) {
-    case QK_BOOT:
-      if (record->event.pressed) {
-        oled_set_cursor(4,6);
-        oled_write_ln_P(PSTR("[Firmware download]"), false);
-        wait_ms(100);
-      }
-      return true; 
     case CM_LNG1:
     case CM_LNG2:
       if (record->event.pressed) {
@@ -250,26 +277,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void oled_write_host_led_state(void) {
     const led_t led_state = host_keyboard_led_state();
-    if (led_state.num_lock) {
-      oled_set_cursor(11,7);
-      oled_write_char(0x1a, false);
-      oled_set_cursor(12,7);
-      oled_write_char(0x1b, false);
-    } else {
-      oled_set_cursor(11,7);
-      oled_write_char(' ', false);
-      oled_set_cursor(12,7);
-      oled_write_char(' ', false);
-    }
     if (led_state.caps_lock) {
-      oled_set_cursor(8,7);
+      oled_set_cursor(11,7);
       oled_write_char(0x16, false);
-      oled_set_cursor(9,7);
+      oled_set_cursor(12,7);
       oled_write_char(0x17, false);
     } else {
-      oled_set_cursor(8,7);
+      oled_set_cursor(11,7);
       oled_write_char(' ', false);
-      oled_set_cursor(9,7);
+      oled_set_cursor(12,7);
       oled_write_char(' ', false);
     }
 }
@@ -295,6 +311,12 @@ void oled_write_layer_state(void) {
             oled_set_cursor(15,7);
             oled_write_char(0x1d, false);
             break;
+        case _L3:
+            oled_set_cursor(14,7);
+            oled_write_char(0x1a, false);
+            oled_set_cursor(15,7);
+            oled_write_char(0x1b, false);
+            break;
         default:
             oled_set_cursor(14,7);
             oled_write_char(' ', false);
@@ -304,6 +326,18 @@ void oled_write_layer_state(void) {
     }
 }
 
+void oled_write_hsv_value(void) {
+    oled_set_cursor(15,5);
+    oled_write_P(PSTR("H"), false);
+    oled_render_hex(15,6,rgblight_get_hue());
+    oled_set_cursor(17,5);
+    oled_write_P(PSTR("S"), false);
+    oled_render_hex(17,6,rgblight_get_sat());
+    oled_set_cursor(19,5);
+    oled_write_P(PSTR("V"), false);
+    oled_render_hex(19,6,rgblight_get_val());
+}
+
 bool oled_task_user(void) {
   if (first_call) {
     render_logo();
@@ -311,6 +345,8 @@ bool oled_task_user(void) {
     oled_render_anim();
     oled_write_layer_state();
     oled_write_host_led_state();
+    oled_render_rgb_mode_name();
+    oled_write_hsv_value() ;
    }
   return false;
 }

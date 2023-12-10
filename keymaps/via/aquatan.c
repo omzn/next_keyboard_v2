@@ -171,5 +171,5 @@ static void oled_render_anim(void) {
 			aquatan_aqua_3
 	};
 
-  oled_render_anim_frame(FAST_TYPE_FRAMES, FAST_TYPE_REVERSE_FRAMES, SLOW_TYPE_FRAMES, 4, 1);
+  oled_render_anim_frame(FAST_TYPE_FRAMES, FAST_TYPE_REVERSE_FRAMES, SLOW_TYPE_FRAMES, 4, 0);
 }
