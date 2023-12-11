@@ -43,17 +43,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_L2] = LAYOUT(
 //    +-------+-------+-------+-------+-------+-------+-------+-------+
-        QK_GESC,KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   
+        _______,_______,_______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,_______,_______,
                 _______,_______,_______,_______,_______,_______,_______,
-        _______,KC_UP  ,_______,_______,_______,_______,_______,_______,
-        _______,_______,KC_BSPC,_______,_______,KC_0,   KC_9,   KC_8,
-        _______,KC_LEFT,KC_RGHT,_______,_______,KC_DOWN,KC_DOWN,_______,
-        _______,        _______,_______,_______,_______,_______,
+        KC_PGUP,KC_UP  ,KC_HOME,_______,_______,_______,_______,_______,
+        _______,_______,_______,_______,_______,_______,_______,_______,
+        KC_PGUP,KC_LEFT,KC_RGHT,KC_END ,_______,KC_DOWN,KC_DOWN,_______,
+        _______,        KC_INS ,KC_DEL ,_______,_______,_______,
         _______,_______,        _______,_______,_______,_______,_______,
-        _______,_______,_______,_______,KC_LCTL,_______,_______,_______
+        _______,_______,_______,_______,_______,_______,_______,_______
     ),
     [_L3] = LAYOUT(
 //     +-------+-------+-------+-------+-------+-------+-------+-------+
@@ -187,42 +187,6 @@ void render_logo(void) {
 
 bool first_call = true;
 
-static void oled_render_hex(int x, int y, int num) {
-  static char wpm_str[3];
-  sprintf(wpm_str, "%02X", num);
-  oled_set_cursor(x, y);
-  oled_write(wpm_str, false);
-}
-
-static void oled_render_rgb_mode_name(void) {
-  int mode = rgblight_get_mode();
-  oled_set_cursor(5,6);
-  if (mode == RGBLIGHT_MODE_STATIC_LIGHT) {
-    oled_write_P(PSTR("STATIC   "), false);
-  } else if (mode >= RGBLIGHT_MODE_BREATHING && mode <= RGBLIGHT_MODE_BREATHING + 3) {
-    oled_write_P(PSTR("BREATHING"), false);
-  } else if (mode >= RGBLIGHT_MODE_RAINBOW_MOOD  && mode <= RGBLIGHT_MODE_RAINBOW_MOOD + 2) {
-    oled_write_P(PSTR("MOOD     "), false);
-  } else if (mode >= RGBLIGHT_MODE_RAINBOW_SWIRL && mode <= RGBLIGHT_MODE_RAINBOW_SWIRL + 5) {
-    oled_write_P(PSTR("SWIRL    "), false);
-  } else if (mode >= RGBLIGHT_MODE_SNAKE && mode <= RGBLIGHT_MODE_SNAKE + 5) {
-    oled_write_P(PSTR("SNAKE    "), false);
-  } else if (mode >= RGBLIGHT_MODE_KNIGHT && mode <= RGBLIGHT_MODE_KNIGHT + 2) {
-    oled_write_P(PSTR("KNIGHT   "), false);
-  } else if (mode == RGBLIGHT_MODE_CHRISTMAS) {
-    oled_write_P(PSTR("XMAS     "), false);
-  } else if (mode >= RGBLIGHT_MODE_STATIC_GRADIENT && mode <= RGBLIGHT_MODE_STATIC_GRADIENT + 9) {
-    oled_write_P(PSTR("GRADIENT "), false);
-  } else if (mode == RGBLIGHT_MODE_RGB_TEST) {
-    oled_write_P(PSTR("RGB TEST "), false);
-  } else if (mode == RGBLIGHT_MODE_ALTERNATING) {
-    oled_write_P(PSTR("ALTERNATE"), false);
-  } else if (mode >= RGBLIGHT_MODE_TWINKLE && mode <= RGBLIGHT_MODE_TWINKLE + 5) {
-    oled_write_P(PSTR("TWINKLE  "), false);
-  } else {
-    oled_write_P(PSTR("         "), false);
-  }
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (first_call) {
@@ -326,7 +290,50 @@ void oled_write_layer_state(void) {
     }
 }
 
+static void oled_render_hex(int x, int y, int num) {
+  static char wpm_str[3];
+  sprintf(wpm_str, "%02X", num);
+  oled_set_cursor(x, y);
+  oled_write(wpm_str, false);
+}
+
+static void oled_write_rgb_mode_name(void) {
+  if (rgblight_is_enabled()) {
+    int mode = rgblight_get_mode();
+    oled_set_cursor(5,6);
+    if (mode == RGBLIGHT_MODE_STATIC_LIGHT) {
+      oled_write_P(PSTR("STATIC   "), false);
+    } else if (mode >= RGBLIGHT_MODE_BREATHING && mode <= RGBLIGHT_MODE_BREATHING + 3) {
+      oled_write_P(PSTR("BREATHING"), false);
+    } else if (mode >= RGBLIGHT_MODE_RAINBOW_MOOD  && mode <= RGBLIGHT_MODE_RAINBOW_MOOD + 2) {
+      oled_write_P(PSTR("MOOD     "), false);
+    } else if (mode >= RGBLIGHT_MODE_RAINBOW_SWIRL && mode <= RGBLIGHT_MODE_RAINBOW_SWIRL + 5) {
+      oled_write_P(PSTR("SWIRL    "), false);
+    } else if (mode >= RGBLIGHT_MODE_SNAKE && mode <= RGBLIGHT_MODE_SNAKE + 5) {
+      oled_write_P(PSTR("SNAKE    "), false);
+    } else if (mode >= RGBLIGHT_MODE_KNIGHT && mode <= RGBLIGHT_MODE_KNIGHT + 2) {
+      oled_write_P(PSTR("KNIGHT   "), false);
+    } else if (mode == RGBLIGHT_MODE_CHRISTMAS) {
+      oled_write_P(PSTR("XMAS     "), false);
+    } else if (mode >= RGBLIGHT_MODE_STATIC_GRADIENT && mode <= RGBLIGHT_MODE_STATIC_GRADIENT + 9) {
+      oled_write_P(PSTR("GRADIENT "), false);
+    } else if (mode == RGBLIGHT_MODE_RGB_TEST) {
+      oled_write_P(PSTR("RGB TEST "), false);
+    } else if (mode == RGBLIGHT_MODE_ALTERNATING) {
+      oled_write_P(PSTR("ALTERNATE"), false);
+    } else if (mode >= RGBLIGHT_MODE_TWINKLE && mode <= RGBLIGHT_MODE_TWINKLE + 5) {
+      oled_write_P(PSTR("TWINKLE  "), false);
+    } else {
+      oled_write_P(PSTR("         "), false);
+    }
+  } else {
+    oled_set_cursor(5,6);
+    oled_write_P(PSTR("         "), false);
+  }
+}
+
 void oled_write_hsv_value(void) {
+  if (rgblight_is_enabled()) {
     oled_set_cursor(15,5);
     oled_write_P(PSTR("H"), false);
     oled_render_hex(15,6,rgblight_get_hue());
@@ -336,6 +343,12 @@ void oled_write_hsv_value(void) {
     oled_set_cursor(19,5);
     oled_write_P(PSTR("V"), false);
     oled_render_hex(19,6,rgblight_get_val());
+  } else {
+    oled_set_cursor(15,5);
+    oled_write_P(PSTR("     "), false);
+    oled_set_cursor(15,6);
+    oled_write_P(PSTR("      "), false);
+  }
 }
 
 bool oled_task_user(void) {
@@ -345,8 +358,8 @@ bool oled_task_user(void) {
     oled_render_anim();
     oled_write_layer_state();
     oled_write_host_led_state();
-    oled_render_rgb_mode_name();
-    oled_write_hsv_value() ;
+    oled_write_rgb_mode_name();
+    oled_write_hsv_value();
    }
   return false;
 }
