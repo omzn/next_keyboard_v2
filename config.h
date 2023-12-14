@@ -3,16 +3,16 @@
 
 #pragma once
 
-#define MATRIX_HAS_GHOST
+//#define MATRIX_HAS_GHOST
 
-#define LED_CAPS_LOCK_PIN GP0
-#define LED_PIN_ON_STATE  0
+//#define LED_CAPS_LOCK_PIN GP0
+//#define LED_PIN_ON_STATE  0
 
 #define I2C_DRIVER I2CD1
 #define I2C1_SDA_PIN GP6
 #define I2C1_SCL_PIN GP7
 
-#define WS2812_DI_PIN GP8
+//#define WS2812_DI_PIN GP8
 #define WS2812_PIO_USE_PIO1
 
 ///* OLED

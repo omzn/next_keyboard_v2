@@ -1,2 +1,2 @@
 # This file intentionally left blank
-VIA_ENABLE = yes
+#VIA_ENABLE = yes
