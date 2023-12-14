@@ -20,11 +20,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_A,     KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K, 
         KC_Z,     KC_X,    KC_C,    KC_V,    KC_B,    KC_SPC,  KC_N,    KC_M, 
                   KC_ENT,  KC_QUOT, KC_SCLN, KC_L,    KC_SLSH, KC_DOT,  KC_COMM,
-        KC_P7,    KC_P8,   KC_P9,   KC_PMNS, KC_PAST, KC_PSLS, KC_BSLS, KC_GRV,
-        KC_HOME,  KC_PGUP, KC_BSPC, KC_EQL,  KC_MINS, KC_0,    KC_9,    KC_8,
+        KC_P7,    KC_P8,   KC_P9,   KC_PMNS, KC_PAST, KC_PSLS, KC_PGUP, KC_PGDN,
+        KC_HOME,  KC_GRV,  KC_BSPC, KC_EQL,  KC_MINS, KC_0,    KC_9,    KC_8,
         KC_P1,    KC_P4,   KC_P6,   KC_P3,   KC_PPLS, KC_P5,   KC_P2,   KC_UP,
         KC_LEFT,           KC_P0,   KC_PDOT, KC_PENT, KC_RGHT, KC_DOWN,
-        KC_END,   KC_PGDN,          KC_RBRC, KC_LBRC, KC_P,    KC_O,    KC_I,
+        KC_END,   KC_BSLS,          KC_RBRC, KC_LBRC, KC_P,    KC_O,    KC_I,
         CM_LNG1,  CM_LNG2, KC_RSFT, KC_LSFT, KC_LCTL, KC_LALT, KC_RALT, FN
         ),
     [_L1] = LAYOUT(
@@ -34,11 +34,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______, _______, 
         _______, _______, _______, _______, _______, _______, _______, _______,
                  _______, _______, _______, _______, _______, _______, _______, 
-        _______, KC_UP,   _______, _______, _______, _______, _______, _______, 
-        KC_BRIU, KC_VOLU, QK_RBT,  KC_F12,  KC_F11,  KC_F10,  KC_F9,   KC_F8, 
-        KC_PGUP, KC_LEFT, KC_RGHT, KC_END,  _______, KC_DOWN, KC_DOWN, FN_LOCK, 
-        _______,          KC_INS, KC_DEL,   _______, _______, L3_LOCK, 
-        KC_BRID, KC_VOLD,          _______, _______, _______, _______, _______,
+        KC_PGUP, KC_UP,   KC_HOME, _______, _______, _______, KC_VOLU, KC_VOLD, 
+        KC_BRIU, _______, QK_RBT,  KC_F12,  KC_F11,  KC_F10,  KC_F9,   KC_F8, 
+        KC_PGDN, KC_LEFT, KC_RGHT, KC_END,  _______, KC_DOWN, KC_DOWN, FN_LOCK, 
+        _______,          KC_INS,  KC_DEL,  _______, _______, L3_LOCK, 
+        KC_BRID, _______,          _______, _______, _______, _______, _______,
         _______, _______, _______, _______, KC_CAPS, _______, _______, _______
         ),
     [_L2] = LAYOUT(
@@ -48,9 +48,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______, 
                  _______, _______, _______, _______, _______, _______, _______, 
-        _______, KC_UP,   _______, _______, _______, _______, _______, _______, 
+        KC_PGUP, KC_UP,   KC_HOME, _______, _______, _______, _______, _______, 
         _______, _______, _______, _______, _______, _______, _______, _______, 
-        KC_PGUP, KC_LEFT, KC_RGHT, KC_END,  _______, KC_DOWN, KC_DOWN, _______,
+        KC_PGDN, KC_LEFT, KC_RGHT, KC_END,  _______, KC_DOWN, KC_DOWN, _______,
         _______,          KC_INS,  KC_DEL,  _______, _______, _______, 
         _______, _______,          _______, _______, _______, _______, _______, 
         _______, _______, _______, _______, _______, _______, _______, _______
@@ -61,11 +61,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______,
                  _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, RGB_RMOD, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______,
-        RGB_HUI, _______, _______, RGB_VAI, _______, _______, RGB_SAI, _______, 
-        _______,          RGB_TOG, RGB_MOD, _______, _______, _______, 
+        RGB_HUI, RGB_HUD, RGB_VAD, RGB_VAI, RGB_MOD, RGB_SAD, RGB_SAI, _______, 
+        _______,          RGB_TOG, _______, _______, _______, _______, 
         _______, _______,          _______, _______, _______, _______, _______, 
         _______, _______, _______, _______, _______, _______, _______, _______)
 
@@ -167,12 +167,14 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   switch (get_highest_layer(layer_state | default_layer_state)) {
   case _BASE:
     //set_colors(0, 84, HSV_BLUE);
+    set_colors(15, 1, HSV_RED);
     break;
   case _L1:
     set_color(0, HSV_RED);
     set_color(13, HSV_RED);
     set_colors(1, 10, HSV_YELLOW);
-    set_colors(15, 4, HSV_GREEN);
+    set_colors(15, 1, HSV_YELLOW);
+    set_colors(16, 3, HSV_GREEN);
     set_color(25, HSV_GREEN);
     set_color(41, HSV_GREEN);
     set_color(60, HSV_GREEN);
@@ -191,7 +193,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     set_colors(81, 2, HSV_MAGENTA);    
     break;
   case _L3:
-    set_colors(15, 1, HSV_GREEN);
+    set_colors(15, 1, HSV_MAGENTA);
     set_colors(79, 1, HSV_GREEN);
     set_colors(21, 4, HSV_RED);
     set_colors(53, 4, HSV_YELLOW);
