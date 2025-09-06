@@ -4,6 +4,7 @@
 #pragma once
 
 #define MATRIX_HAS_GHOST
+#define DEBOUNCE 50
 
 #define LED_CAPS_LOCK_PIN GP0
 #define LED_PIN_ON_STATE  0
